@@ -26,7 +26,7 @@
       <div class="text-center mb-6">
         <label for="sp1-mode" class="mr-2 text-pink-300 font-medium">SP1 Mode:</label>
         <select id="sp1-mode" class="bg-gray-800 p-2 rounded text-white">
-          <option value="hypercube">Hypercube (~10.3s avg)</option>
+          <option value="hypercube" selected>Hypercube (~10.3s avg)</option>
           <option value="standard">Standard (~6s)</option>
           <option value="optimized">Optimized (~4s)</option>
           <option value="cluster">Cluster (~2s)</option>
@@ -46,13 +46,15 @@
       </section>
 
       <!-- Chart -->
-      <section class="bg-gray-900 p-6 rounded-2xl">
+      <section class="bg-gray-900 p-6 rounded-2xl h-[300px] sm:h-[400px]">
         <h2 class="text-xl text-pink-300 mb-4">Block Timing Chart</h2>
-        <canvas id="blockChart" height="100"></canvas>
+        <div class="h-full">
+          <canvas id="blockChart" class="w-full h-full"></canvas>
+        </div>
       </section>
     </main>
 
-    <!-- Merged JS -->
+    <!-- Script -->
     <script>
       window.onload = function () {
         const ctx = document.getElementById('blockChart').getContext('2d');
@@ -109,6 +111,7 @@
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false,
             animation: false,
             interaction: {
               mode: 'index',
@@ -125,7 +128,9 @@
                 borderWidth: 1,
               },
               legend: {
-                labels: { color: '#fff' }
+                labels: () => ({
+                  color: body.classList.contains('bg-black') ? '#fff' : '#000'
+                })
               }
             },
             scales: {
@@ -164,7 +169,7 @@
           t++;
         }
 
-        setInterval(updateSimulation, 2000);
+        setInterval(updateSimulation, 500); // Faster updates
 
         // Theme toggle
         if (localStorage.getItem('theme') === 'light') enableLightMode();
@@ -194,6 +199,7 @@
     </script>
   </body>
 </html>
+
 
 
 
