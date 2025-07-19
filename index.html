@@ -54,6 +54,34 @@
       </section>
     </main>
 
+    <script>
+  const glowPlugin = {
+    id: 'glow',
+    beforeDatasetsDraw(chart, args, options) {
+      const { ctx } = chart;
+      chart.data.datasets.forEach((dataset, index) => {
+        const meta = chart.getDatasetMeta(index);
+        if (!meta.hidden) {
+          ctx.save();
+          ctx.shadowColor = dataset.borderColor;
+          ctx.shadowBlur = 15;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          meta.data.forEach((point, i) => {
+            const { x, y } = point.getProps(['x', 'y'], true);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.stroke();
+          ctx.restore();
+        }
+      });
+    }
+  };
+
+  Chart.register(glowPlugin);
+</script>
+
     <!-- Script -->
     <script>
       window.onload = function () {
