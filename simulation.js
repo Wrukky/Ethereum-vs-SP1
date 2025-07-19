@@ -1,3 +1,4 @@
+window.onload = function () {
 const ctx = document.getElementById('blockChart').getContext('2d');
 const ethStatus = document.getElementById('eth-status');
 const sp1Status = document.getElementById('sp1-status');
