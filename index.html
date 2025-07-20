@@ -1,330 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Ethereum vs SP1 Proving</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <title>Ethereum vs SP1 Proving</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body id="body" class="bg-black text-white font-sans transition-colors duration-300">
+  <main class="max-w-6xl mx-auto p-6">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-pink-400">Ethereum vs SP1 Proving</h1>
+      <p class="text-gray-300 mt-2">Live simulation of SP1 proving speed</p>
+    </header>
 
-  <body id="body" class="bg-black text-white font-sans transition-colors duration-300">
-    <main class="max-w-6xl mx-auto p-6">
-      <header class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-pink-400">Ethereum vs SP1 Proving</h1>
-        <p class="text-gray-300 mt-2">Live simulation of SP1 proving speed</p>
-      </header>
+    <!-- Theme Toggle Button -->
+    <div class="flex justify-end mb-6">
+      <button id="toggleTheme" class="px-4 py-2 rounded bg-pink-500 text-white hover:bg-pink-600 transition">
+        Toggle Theme
+      </button>
+    </div>
 
-      <!-- Theme Toggle Button -->
-      <div class="flex justify-end mb-6">
-        <button id="toggleTheme" class="px-4 py-2 rounded bg-pink-500 text-white hover:bg-pink-600 transition">
-          Toggle Theme
-        </button>
+    <!-- Mode Selector -->
+     <div class="mt-8 text-sm text-gray-400 text-center">
+  <p><span class="text-pink-400 font-bold">SP1 Modes:</span> 
+    Hypercube = distributed GPU proving • Standard = 1 prover • Optimized = high-end config • Cluster = parallelized nodes
+  </p>
+</div>
+    <div class="text-center mb-6">
+      <label for="sp1-mode" class="mr-2 text-pink-300 font-medium">SP1 Mode:</label>
+      <select id="sp1-mode" class="bg-gray-800 p-2 rounded text-white">
+        <option value="hypercube" selected>Hypercube (~10.3s avg)</option>
+        <option value="standard">Standard (~6s)</option>
+        <option value="optimized">Optimized (~4s)</option>
+        <option value="cluster">Cluster (~2s)</option>
+        
+      </select>
+    </div>
+
+    <!-- Status Panels -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="bg-gray-900 p-6 rounded-2xl">
+        <h2 class="text-xl text-pink-300 mb-2">Ethereum Today</h2>
+        <p id="eth-status">Waiting...</p>
+      </div>
+      <div class="bg-gray-900 p-6 rounded-2xl">
+        <h2 class="text-xl text-pink-300 mb-2">SP1 Proving</h2>
+        <p id="sp1-status">Waiting...</p>
+        <p id="sp1-success" class="text-green-400 mt-1 text-sm">Success Rate: 93%</p>
+      </div>
+    </section>
+
+    <!-- Chart -->
+    <section class="bg-gray-900 p-6 rounded-2xl h-[500px] sm:h-[600px] mb-10">
+      <h2 class="text-xl text-pink-300 mb-4">Block Timing Chart</h2>
+      <div class="h-full">
+        <canvas id="blockChart" class="w-full h-full"></canvas>
+      </div>
+    </section>
+
+    <!-- Block Overview -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="bg-blue-950 p-4 rounded-xl shadow-lg">
+        <h3 class="text-blue-300 font-bold text-lg mb-4">Ethereum Flow</h3>
+        <div class="space-y-3">
+          <div class="bg-blue-600 text-black text-center py-2 rounded">Block Overview</div>
+          <div class="bg-blue-500 text-black text-center py-2 rounded">Transactions</div>
+          <div class="bg-blue-400 text-black text-center py-2 rounded">Block Hash</div>
+          <div class="bg-blue-300 text-black text-center py-2 rounded">Finality: ~12s</div>
+        </div>
       </div>
 
-      <!-- Mode Selector -->
-      <!-- Mode Selector -->
-<div class="text-center mb-6">
-  <label for="sp1-mode" class="mr-2 text-pink-300 font-medium">SP1 Mode:</label>
-  <select id="sp1-mode" class="bg-gray-800 p-2 rounded text-white">
-    <option value="hypercube" selected>Hypercube (~10.3s avg)</option>
-    <option value="standard">Standard (~6s)</option>
-    <option value="optimized">Optimized (~4s)</option>
-    <option value="cluster">Cluster (~2s)</option>
-  </select>
-</div>
-
-<!-- Block Count and Averages -->
-<section class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center mb-8">
-  <div class="bg-gray-800 p-4 rounded-lg">
-    <h3 class="text-sm text-pink-300 mb-1">Total Blocks Simulated</h3>
-    <p id="block-count" class="text-2xl font-semibold">0</p>
-  </div>
-  <div class="bg-gray-800 p-4 rounded-lg">
-    <h3 class="text-sm text-blue-400 mb-1">Ethereum Avg (Last 30)</h3>
-    <p id="eth-avg" class="text-lg font-medium">--</p>
-  </div>
-  <div class="bg-gray-800 p-4 rounded-lg">
-    <h3 class="text-sm text-pink-400 mb-1">SP1 Avg (Last 30)</h3>
-    <p id="sp1-avg" class="text-lg font-medium">--</p>
-  </div>
-</section>
-
-<!-- Ethereum Block -->
-<div class="bg-blue-950 p-4 rounded-xl shadow-lg">
-  <h3 class="text-blue-300 font-bold text-lg mb-4">Ethereum Block</h3>
-  <div class="space-y-3">
-    <div class="bg-blue-600 text-black text-center py-2 rounded font-semibold">Block Overview</div>
-    <div class="bg-blue-500 text-black text-center py-2 rounded font-semibold">Transactions</div>
-    <div class="bg-blue-400 text-black text-center py-2 rounded font-semibold">Block Hash</div>
-    <div class="bg-blue-300 text-black text-center py-2 rounded font-semibold">Finality: ~12s</div>
-    <div class="bg-blue-300 text-black text-center py-2 rounded font-semibold">Proof Type: None (PoS only)</div>
-  </div>
-</div>
-
-
-    <!-- SP1 Proved Block -->
-    <div class="bg-pink-950 p-4 rounded-xl shadow-lg">
-      <h3 class="text-pink-300 font-bold text-lg mb-4">SP1 Proved Block</h3>
-      <div class="space-y-3">
-        <div class="bg-pink-600 text-black text-center py-2 rounded font-semibold">ZK Proof Generated</div>
-        <div class="bg-pink-400 text-black text-center py-2 rounded font-semibold">Prover: Hypercube SP1</div>
-        <div class="bg-pink-300 text-black text-center py-2 rounded font-semibold">Proving Time: ~10.3s (avg)</div>
-        <div class="bg-pink-300 text-black text-center py-2 rounded font-semibold">Proof Type: SP1 Zero-Knowledge Proof
-</div>
-  </div>
-</div>
-
+      <div class="bg-pink-950 p-4 rounded-xl shadow-lg">
+        <h3 class="text-pink-300 font-bold text-lg mb-4">SP1 Flow</h3>
+        <div class="space-y-3">
+          <div class="bg-pink-600 text-black text-center py-2 rounded">Block Overview</div>
+          <div class="bg-pink-500 text-black text-center py-2 rounded">Proof Type: zk-SNARK(SP1 ZKPS)</div>
+          <div class="bg-pink-400 text-black text-center py-2 rounded">Proof Generated</div>
+          <div class="bg-pink-300 text-black text-center py-2 rounded">Finality: ~10.3s</div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-      <!-- Status Panels -->
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        <div class="bg-gray-900 p-6 rounded-2xl">
-          <h2 class="text-xl text-pink-300 mb-2 flex items-center">
-  Ethereum Today
-  <div class="relative ml-2 group">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9 2a7 7 0 100 14A7 7 0 009 2zM8.93 6.588a.75.75 0 111.14.974L9.11 9h.89a.75.75 0 010 1.5h-1.5a.75.75 0 01-.72-.969l.57-1.443A.75.75 0 018.93 6.588zM9 12a.75.75 0 100 1.5.75.75 0 000-1.5z" />
-    </svg>
-    <div class="absolute w-64 p-2 text-sm text-white bg-gray-800 rounded shadow-md top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-      Average block time for Ethereum mainnet (~12s per block).
-   
+    <!-- Footer -->
+    <footer class="text-center text-gray-400 text-sm mt-10">
+      Built by <a href="https://twitter.com/wru_kii" class="text-pink-400 hover:underline">@wru_kii</a>
+    </footer>
+  </main>
 
-    </div>
-  </span>
-</h2>
+  <!-- Script -->
+  <script>
+    window.onload = function () {
+      const ctx = document.getElementById('blockChart').getContext('2d');
+      const ethStatus = document.getElementById('eth-status');
+      const sp1Status = document.getElementById('sp1-status');
+      const sp1Success = document.getElementById('sp1-success');
+      const modeSelector = document.getElementById('sp1-mode');
+      const toggleBtn = document.getElementById('toggleTheme');
+      const body = document.getElementById('body');
 
-          <p id="eth-status">Waiting...</p>
-        </div>
-        <div class="bg-gray-900 p-6 rounded-2xl">
-          <h2 class="text-xl text-pink-300 mb-2 flex items-center">
-  SP1 Proving
-  <div class="relative ml-2 group">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9 2a7 7 0 100 14A7 7 0 009 2zM8.93 6.588a.75.75 0 111.14.974L9.11 9h.89a.75.75 0 010 1.5h-1.5a.75.75 0 01-.72-.969l.57-1.443A.75.75 0 018.93 6.588zM9 12a.75.75 0 100 1.5.75.75 0 000-1.5z" />
-    </svg>
-    <div class="absolute w-64 p-2 text-sm text-white bg-gray-800 rounded shadow-md top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-      Block proving time using SP1 prover network — based on selected mode.
-    
+      let labels = [];
+      let ethData = [];
+      let sp1Data = [];
+      let t = 0;
+      let sp1Total = 0;
+      let sp1Under12 = 0;
 
-    </div>
-  </span>
-</h2>
+      const sp1Timings = {
+        standard: () => 6 + Math.sin(t / 5) + Math.random(),
+        optimized: () => 4 + Math.sin(t / 4) + Math.random() * 0.5,
+        cluster: () => 2 + Math.sin(t / 3) * 0.5 + Math.random() * 0.3,
+        hypercube: () => 10 + Math.sin(t / 6) * 0.5 + (Math.random() - 0.5)
+      };
 
-          <p id="sp1-status">Waiting...</p>
-<p id="sp1-success" class="text-green-400 mt-1 text-sm">Success Rate: 0%</p>
+      const ethGradient = ctx.createLinearGradient(0, 0, 0, 400);
+      ethGradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+      ethGradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
-        </div>
-      </section>
+      const sp1Gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      sp1Gradient.addColorStop(0, 'rgba(236, 72, 153, 0.5)');
+      sp1Gradient.addColorStop(1, 'rgba(236, 72, 153, 0)');
 
-      <!-- Chart -->
-      <section class="bg-gray-900 p-6 rounded-2xl h-[1000px] sm:h-[1000px]">
-        <h2 class="text-xl text-pink-300 mb-4">Block Timing Chart</h2>
-        <div class="h-full">
-          <canvas id="blockChart" class="w-full h-[500px] sm:h-[1000px]"></canvas>
-        </div>
-      </section>
-    </main>
-
-    <script>
-  const glowPlugin = {
-    id: 'glow',
-    beforeDatasetsDraw(chart, args, options) {
-      const { ctx } = chart;
-      chart.data.datasets.forEach((dataset, index) => {
-        const meta = chart.getDatasetMeta(index);
-        if (!meta.hidden) {
-          ctx.save();
-          ctx.shadowColor = dataset.borderColor;
-          ctx.shadowBlur = 15;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          meta.data.forEach((point, i) => {
-            const { x, y } = point.getProps(['x', 'y'], true);
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          });
-          ctx.stroke();
-          ctx.restore();
-        }
-      });
-    }
-  };
-
-  Chart.register(glowPlugin);
-</script>
-
-
-    <!-- Script -->
-    <script>
-      window.onload = function () {
-        const ctx = document.getElementById('blockChart').getContext('2d');
-        const ethStatus = document.getElementById('eth-status');
-        const sp1Status = document.getElementById('sp1-status');
-        const modeSelector = document.getElementById('sp1-mode');
-        const toggleBtn = document.getElementById('toggleTheme');
-        const body = document.getElementById('body');
-
-        let labels = [];
-        let ethData = [];
-        let sp1Data = [];
-        let t = 0;
-        let sp1Total = 0;
-let sp1Under12 = 0;
-
-
-        const sp1Timings = {
-          standard: () => 6 + Math.sin(t / 5) + Math.random(),
-          optimized: () => 4 + Math.sin(t / 4) + Math.random() * 0.5,
-          cluster: () => 2 + Math.sin(t / 3) * 0.5 + Math.random() * 0.3,
-          hypercube: () => 10 + Math.sin(t / 6) * 0.5 + (Math.random() - 0.5)
-        };
-
-        const ethGradient = ctx.createLinearGradient(0, 0, 0, 400);
-        ethGradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-        ethGradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-
-        const sp1Gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        sp1Gradient.addColorStop(0, 'rgba(236, 72, 153, 0.5)');
-        sp1Gradient.addColorStop(1, 'rgba(236, 72, 153, 0)');
-
-        const chart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [
-              {
-                label: 'Ethereum Today',
-                data: ethData,
-                borderColor: 'rgba(59, 130, 246, 1)',
-                backgroundColor: ethGradient,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 0
-              },
-              {
-                label: 'SP1 Proving',
-                data: sp1Data,
-                borderColor: 'rgba(236, 72, 153, 1)',
-                backgroundColor: sp1Gradient,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 0
-              }
-            ]
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Ethereum Today',
+              data: ethData,
+              borderColor: 'rgba(59, 130, 246, 1)',
+              borderWidth: 2,
+              backgroundColor: ethGradient,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0
+            },
+            {
+              label: 'SP1 Proving',
+              data: sp1Data,
+              borderColor: 'rgba(236, 72, 153, 1)',
+              borderWidth: 2,
+              backgroundColor: sp1Gradient,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: false,
-            interaction: {
-              mode: 'index',
-              intersect: false,
+          plugins: {
+            tooltip: {
+              enabled: true,
+              backgroundColor: '#111827',
+              titleColor: '#f472b6',
+              bodyColor: '#fff',
+              padding: 10,
+              borderColor: '#f472b6',
+              borderWidth: 1,
             },
-            plugins: {
-              tooltip: {
-                enabled: true,
-                backgroundColor: '#111827',
-                titleColor: '#f472b6',
-                bodyColor: '#fff',
-                padding: 10,
-                borderColor: '#f472b6',
-                borderWidth: 1,
-                
-              },
-              legend: {
-                labels: () => ({
-                  color: body.classList.contains('bg-black') ? '#fff' : '#000'
-                })
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: { display: true, text: 'Seconds', color: '#fff' },
-                ticks: { color: '#ccc' }
-              },
-              x: {
-                title: { display: true, text: 'Time', color: '#fff' },
-                ticks: { color: '#ccc' }
+            legend: {
+              labels: {
+                color: body.classList.contains('bg-black') ? '#fff' : '#000'
               }
             }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Seconds', color: '#fff' },
+              ticks: { color: '#ccc' }
+            },
+            x: {
+              title: { display: true, text: 'Time', color: '#fff' },
+              ticks: { color: '#ccc' }
+            }
           }
-        });
+        }
+      });
 
-        function updateSimulation() {
-  const time = new Date().toLocaleTimeString();
-  const sp1Mode = modeSelector.value;
+      function updateSimulation() {
+        const time = new Date().toLocaleTimeString();
+        const sp1Mode = modeSelector.value;
 
-  const ethTime = 12 + Math.sin(t / 5) * 0.3 + Math.random() * 0.2;
-  const sp1Time = sp1Timings[sp1Mode]();
-  sp1Total++;
-if (sp1Time < 12) sp1Under12++;
+        const ethTime = 12 + Math.sin(t / 5) * 0.3 + Math.random() * 0.2;
+        const sp1Time = sp1Timings[sp1Mode]();
 
-const successRate = ((sp1Under12 / sp1Total) * 100).toFixed(1);
-document.getElementById("sp1-success").textContent = `Success Rate: ${successRate}%`;
+        sp1Total++;
+        if (sp1Time < 12) sp1Under12++;
+        const successRate = ((sp1Under12 / sp1Total) * 93).toFixed(1);
+        sp1Success.textContent = `Success Rate: ${successRate}%`;
 
+        ethStatus.textContent = `Block proved in ${ethTime.toFixed(1)}s`;
+        sp1Status.textContent = `Block proved in ${sp1Time.toFixed(1)}s`;
 
-  ethStatus.textContent = `Block proved in ${ethTime.toFixed(1)}s`;
-  sp1Status.textContent = `Block proved in ${sp1Time.toFixed(1)}s`;
+        labels.push(time);
+        ethData.push(ethTime);
+        sp1Data.push(sp1Time);
 
-  labels.push(time);
-  ethData.push(ethTime);
-  sp1Data.push(sp1Time);
-
-  if (labels.length > 30) {
-    labels.shift(); ethData.shift(); sp1Data.shift();
-  }
-
-  // Update block count
-  document.getElementById('block-count').textContent = ethData.length;
-
-  // Calculate rolling averages
-  const ethAvg = (ethData.reduce((a, b) => a + b, 0) / ethData.length).toFixed(2);
-  const sp1Avg = (sp1Data.reduce((a, b) => a + b, 0) / sp1Data.length).toFixed(2);
-
-  document.getElementById('eth-avg').textContent = `${ethAvg}s`;
-  document.getElementById('sp1-avg').textContent = `${sp1Avg}s`;
-
-  chart.update();
-  t++;
+        if (labels.length > 30) {
+          labels.shift(); ethData.shift(); sp1Data.shift();
         }
 
-        setInterval(updateSimulation, 1000); // Faster updates
+        chart.update();
+        t++;
+      }
 
-        // Theme toggle
-        if (localStorage.getItem('theme') === 'light') enableLightMode();
+      setInterval(updateSimulation, 1000);
 
-        toggleBtn.addEventListener('click', () => {
-          if (body.classList.contains('bg-black')) {
-            enableLightMode();
-            localStorage.setItem('theme', 'light');
-          } else {
-            enableDarkMode();
-            localStorage.setItem('theme', 'dark');
-          }
-        });
+      // Theme toggle
+      if (localStorage.getItem('theme') === 'light') enableLightMode();
 
-        function enableLightMode() {
-          body.classList.remove('bg-black', 'text-white');
-          body.classList.add('bg-white', 'text-black');
-          toggleBtn.textContent = 'Toggle Dark Mode';
+      toggleBtn.addEventListener('click', () => {
+        if (body.classList.contains('bg-black')) {
+          enableLightMode();
+          localStorage.setItem('theme', 'light');
+        } else {
+          enableDarkMode();
+          localStorage.setItem('theme', 'dark');
         }
+      });
 
-        function enableDarkMode() {
-          body.classList.remove('bg-white', 'text-black');
-          body.classList.add('bg-black', 'text-white');
-          toggleBtn.textContent = 'Toggle Light Mode';
-        }
-      };
-    </script>
-    <footer class="text-center mt-12 py-6 border-t border-gray-700">
-  <p class="text-sm text-gray-400">
-    Built by <a href="https://twitter.com/wru_kii" target="_blank" class="text-pink-400 hover:underline">@wru_kii</a>
-  </p>
-</footer>
-  </body>
+      function enableLightMode() {
+        body.classList.remove('bg-black', 'text-white');
+        body.classList.add('bg-white', 'text-black');
+        toggleBtn.textContent = 'Toggle Dark Mode';
+      }
+
+      function enableDarkMode() {
+        body.classList.remove('bg-white', 'text-black');
+        body.classList.add('bg-black', 'text-white');
+        toggleBtn.textContent = 'Toggle Light Mode';
+      }
+    };
+  </script>
+</body>
 </html>
+
+
+
