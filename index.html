@@ -23,25 +23,100 @@
       </div>
 
       <!-- Mode Selector -->
-      <div class="text-center mb-6">
-        <label for="sp1-mode" class="mr-2 text-pink-300 font-medium">SP1 Mode:</label>
-        <select id="sp1-mode" class="bg-gray-800 p-2 rounded text-white">
-          <option value="hypercube" selected>Hypercube (~10.3s avg)</option>
-          <option value="standard">Standard (~6s)</option>
-          <option value="optimized">Optimized (~4s)</option>
-          <option value="cluster">Cluster (~2s)</option>
-        </select>
+      <!-- Mode Selector -->
+<div class="text-center mb-6">
+  <label for="sp1-mode" class="mr-2 text-pink-300 font-medium">SP1 Mode:</label>
+  <select id="sp1-mode" class="bg-gray-800 p-2 rounded text-white">
+    <option value="hypercube" selected>Hypercube (~10.3s avg)</option>
+    <option value="standard">Standard (~6s)</option>
+    <option value="optimized">Optimized (~4s)</option>
+    <option value="cluster">Cluster (~2s)</option>
+  </select>
+</div>
+
+<!-- Block Count and Averages -->
+<section class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center mb-8">
+  <div class="bg-gray-800 p-4 rounded-lg">
+    <h3 class="text-sm text-pink-300 mb-1">Total Blocks Simulated</h3>
+    <p id="block-count" class="text-2xl font-semibold">0</p>
+  </div>
+  <div class="bg-gray-800 p-4 rounded-lg">
+    <h3 class="text-sm text-blue-400 mb-1">Ethereum Avg (Last 30)</h3>
+    <p id="eth-avg" class="text-lg font-medium">--</p>
+  </div>
+  <div class="bg-gray-800 p-4 rounded-lg">
+    <h3 class="text-sm text-pink-400 mb-1">SP1 Avg (Last 30)</h3>
+    <p id="sp1-avg" class="text-lg font-medium">--</p>
+  </div>
+</section>
+
+<!-- Ethereum Block -->
+<div class="bg-blue-950 p-4 rounded-xl shadow-lg">
+  <h3 class="text-blue-300 font-bold text-lg mb-4">Ethereum Block</h3>
+  <div class="space-y-3">
+    <div class="bg-blue-600 text-black text-center py-2 rounded font-semibold">Block Overview</div>
+    <div class="bg-blue-500 text-black text-center py-2 rounded font-semibold">Transactions</div>
+    <div class="bg-blue-400 text-black text-center py-2 rounded font-semibold">Block Hash</div>
+    <div class="bg-blue-300 text-black text-center py-2 rounded font-semibold">Finality: ~12s</div>
+    <div class="bg-blue-300 text-black text-center py-2 rounded font-semibold">Proof Type: None (PoS only)</div>
+  </div>
+</div>
+
+
+    <!-- SP1 Proved Block -->
+    <div class="bg-pink-950 p-4 rounded-xl shadow-lg">
+      <h3 class="text-pink-300 font-bold text-lg mb-4">SP1 Proved Block</h3>
+      <div class="space-y-3">
+        <div class="bg-pink-600 text-black text-center py-2 rounded font-semibold">ZK Proof Generated</div>
+        <div class="bg-pink-400 text-black text-center py-2 rounded font-semibold">Prover: Hypercube SP1</div>
+        <div class="bg-pink-300 text-black text-center py-2 rounded font-semibold">Proving Time: ~10.3s (avg)</div>
+        <div class="bg-pink-300 text-black text-center py-2 rounded font-semibold">Proof Type: SP1 Zero-Knowledge Proof
+</div>
+  </div>
+</div>
+
       </div>
+    </div>
+  </div>
+</section>
 
       <!-- Status Panels -->
       <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div class="bg-gray-900 p-6 rounded-2xl">
-          <h2 class="text-xl text-pink-300 mb-2">Ethereum Today</h2>
+          <h2 class="text-xl text-pink-300 mb-2 flex items-center">
+  Ethereum Today
+  <div class="relative ml-2 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M9 2a7 7 0 100 14A7 7 0 009 2zM8.93 6.588a.75.75 0 111.14.974L9.11 9h.89a.75.75 0 010 1.5h-1.5a.75.75 0 01-.72-.969l.57-1.443A.75.75 0 018.93 6.588zM9 12a.75.75 0 100 1.5.75.75 0 000-1.5z" />
+    </svg>
+    <div class="absolute w-64 p-2 text-sm text-white bg-gray-800 rounded shadow-md top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+      Average block time for Ethereum mainnet (~12s per block).
+   
+
+    </div>
+  </span>
+</h2>
+
           <p id="eth-status">Waiting...</p>
         </div>
         <div class="bg-gray-900 p-6 rounded-2xl">
-          <h2 class="text-xl text-pink-300 mb-2">SP1 Proving</h2>
+          <h2 class="text-xl text-pink-300 mb-2 flex items-center">
+  SP1 Proving
+  <div class="relative ml-2 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 cursor-pointer" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M9 2a7 7 0 100 14A7 7 0 009 2zM8.93 6.588a.75.75 0 111.14.974L9.11 9h.89a.75.75 0 010 1.5h-1.5a.75.75 0 01-.72-.969l.57-1.443A.75.75 0 018.93 6.588zM9 12a.75.75 0 100 1.5.75.75 0 000-1.5z" />
+    </svg>
+    <div class="absolute w-64 p-2 text-sm text-white bg-gray-800 rounded shadow-md top-6 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+      Block proving time using SP1 prover network — based on selected mode.
+    
+
+    </div>
+  </span>
+</h2>
+
           <p id="sp1-status">Waiting...</p>
+<p id="sp1-success" class="text-green-400 mt-1 text-sm">Success Rate: 0%</p>
+
         </div>
       </section>
 
@@ -49,7 +124,7 @@
       <section class="bg-gray-900 p-6 rounded-2xl h-[1000px] sm:h-[1000px]">
         <h2 class="text-xl text-pink-300 mb-4">Block Timing Chart</h2>
         <div class="h-full">
-          <canvas id="blockChart" class="w-full h-[300px] sm:h-[1000px]"></canvas>
+          <canvas id="blockChart" class="w-full h-[500px] sm:h-[1000px]"></canvas>
         </div>
       </section>
     </main>
@@ -82,6 +157,7 @@
   Chart.register(glowPlugin);
 </script>
 
+
     <!-- Script -->
     <script>
       window.onload = function () {
@@ -96,6 +172,9 @@
         let ethData = [];
         let sp1Data = [];
         let t = 0;
+        let sp1Total = 0;
+let sp1Under12 = 0;
+
 
         const sp1Timings = {
           standard: () => 6 + Math.sin(t / 5) + Math.random(),
@@ -154,6 +233,7 @@
                 padding: 10,
                 borderColor: '#f472b6',
                 borderWidth: 1,
+                
               },
               legend: {
                 labels: () => ({
@@ -176,25 +256,41 @@
         });
 
         function updateSimulation() {
-          const time = new Date().toLocaleTimeString();
-          const sp1Mode = modeSelector.value;
+  const time = new Date().toLocaleTimeString();
+  const sp1Mode = modeSelector.value;
 
-          const ethTime = 12 + Math.sin(t / 5) * 0.3 + Math.random() * 0.2;
-          const sp1Time = sp1Timings[sp1Mode]();
+  const ethTime = 12 + Math.sin(t / 5) * 0.3 + Math.random() * 0.2;
+  const sp1Time = sp1Timings[sp1Mode]();
+  sp1Total++;
+if (sp1Time < 12) sp1Under12++;
 
-          ethStatus.textContent = `Block proved in ${ethTime.toFixed(1)}s`;
-          sp1Status.textContent = `Block proved in ${sp1Time.toFixed(1)}s`;
+const successRate = ((sp1Under12 / sp1Total) * 100).toFixed(1);
+document.getElementById("sp1-success").textContent = `Success Rate: ${successRate}%`;
 
-          labels.push(time);
-          ethData.push(ethTime);
-          sp1Data.push(sp1Time);
 
-          if (labels.length > 30) {
-            labels.shift(); ethData.shift(); sp1Data.shift();
-          }
+  ethStatus.textContent = `Block proved in ${ethTime.toFixed(1)}s`;
+  sp1Status.textContent = `Block proved in ${sp1Time.toFixed(1)}s`;
 
-          chart.update();
-          t++;
+  labels.push(time);
+  ethData.push(ethTime);
+  sp1Data.push(sp1Time);
+
+  if (labels.length > 30) {
+    labels.shift(); ethData.shift(); sp1Data.shift();
+  }
+
+  // Update block count
+  document.getElementById('block-count').textContent = ethData.length;
+
+  // Calculate rolling averages
+  const ethAvg = (ethData.reduce((a, b) => a + b, 0) / ethData.length).toFixed(2);
+  const sp1Avg = (sp1Data.reduce((a, b) => a + b, 0) / sp1Data.length).toFixed(2);
+
+  document.getElementById('eth-avg').textContent = `${ethAvg}s`;
+  document.getElementById('sp1-avg').textContent = `${sp1Avg}s`;
+
+  chart.update();
+  t++;
         }
 
         setInterval(updateSimulation, 1000); // Faster updates
@@ -225,11 +321,10 @@
         }
       };
     </script>
+    <footer class="text-center mt-12 py-6 border-t border-gray-700">
+  <p class="text-sm text-gray-400">
+    Built by <a href="https://twitter.com/wru_kii" target="_blank" class="text-pink-400 hover:underline">@wru_kii</a>
+  </p>
+</footer>
   </body>
 </html>
-
-
-
-
-
-
